@@ -1,4 +1,3 @@
-using System;
 using Core;
 using Managers;
 using UnityEngine;
@@ -9,7 +8,7 @@ namespace Paddle
     public class PaddleController : MyBehaviour
     {
         [Header("Movement Settings")] [SerializeField]
-        private float moveSpeed = 2f;
+        private float moveSpeed = 3f;
 
         [SerializeField] private float xRange = 1.8f;
 

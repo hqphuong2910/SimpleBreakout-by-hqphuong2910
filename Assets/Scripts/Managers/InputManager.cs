@@ -6,6 +6,7 @@ namespace Managers
     {
         private InputSystem_Actions _inputActions;
         public float HorizontalMovement { get; private set; }
+        public bool IsFired { get; private set; }
 
         private void Update()
         {
@@ -42,11 +43,17 @@ namespace Managers
         private void ReadInput()
         {
             ReadMovementInput();
+            ReadFireInput();
         }
 
         private void ReadMovementInput()
         {
             HorizontalMovement = _inputActions.Player.Move.ReadValue<float>();
+        }
+
+        private void ReadFireInput()
+        {
+            IsFired = _inputActions.Player.Fire.WasPressedThisFrame();
         }
     }
 }
