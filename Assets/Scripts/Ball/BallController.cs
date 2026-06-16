@@ -1,6 +1,8 @@
+using System;
 using Core;
 using Managers;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Ball
 {
@@ -68,6 +70,20 @@ namespace Ball
             {
                 gameObject.SetActive(false);
             }
+        }
+
+        private void OnCollisionEnter2D(Collision2D other)
+        {
+            var velocity = _rb.linearVelocity;
+            
+            var isMovingTooStraight = Mathf.Abs(velocity.x) < 0.2f | Mathf.Abs(velocity.y) < 0.2f;
+            
+            if (!isMovingTooStraight) return;
+            var randomJitterX = Random.Range(-1f, 1f);
+            var randomJitterY = Random.Range(-1f, 1f);
+            var jitterDirection = new Vector2(randomJitterX, randomJitterY);
+            var newDirection = (velocity + jitterDirection).normalized;
+            _rb.linearVelocity = newDirection * moveSpeed;
         }
     }
 }
