@@ -12,7 +12,6 @@ namespace Ball
         private float moveSpeed = 5f;
 
         [SerializeField] private float xDirectionRange = 5f;
-        [SerializeField] private float bottomBound = -5.2f;
 
         [Header("References")] [SerializeField]
         private GameObject paddle;
@@ -23,24 +22,23 @@ namespace Ball
 
         private void Update()
         {
-            DisableOffScreen();
             if (_isLaunched) return;
             GetInputToLaunch();
             ConstraintPosition();
         }
 
-        private void OnCollisionEnter2D(Collision2D other)
+        private void OnCollisionEnter2D()
         {
-            var velocity = _rb.linearVelocity;
+            ChangeDirection();
+        }
 
-            var isMovingTooStraight = (Mathf.Abs(velocity.x) < 0.2f) | (Mathf.Abs(velocity.y) < 0.2f);
-
-            if (!isMovingTooStraight) return;
-            var randomJitterX = Random.Range(-1f, 1f);
-            var randomJitterY = Random.Range(-1f, 1f);
-            var jitterDirection = new Vector2(randomJitterX, randomJitterY);
-            var newDirection = (velocity + jitterDirection).normalized;
-            _rb.linearVelocity = newDirection * moveSpeed;
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Death Zone"))
+            {
+                ResetBall();
+                GameManager.Instance.UpdateLives(-1);
+            }
         }
 
         protected override void LoadComponents()
@@ -77,9 +75,25 @@ namespace Ball
             _rb.linearVelocity = launchDirection * moveSpeed;
         }
 
-        private void DisableOffScreen()
+        private void ChangeDirection()
         {
-            if (transform.position.y <= bottomBound) gameObject.SetActive(false);
+            var velocity = _rb.linearVelocity;
+
+            var isMovingTooStraight = (Mathf.Abs(velocity.x) < 0.2f) | (Mathf.Abs(velocity.y) < 0.2f);
+
+            if (!isMovingTooStraight) return;
+            var randomJitterX = Random.Range(-1f, 1f);
+            var randomJitterY = Random.Range(-1f, 1f);
+            var jitterDirection = new Vector2(randomJitterX, randomJitterY);
+            var newDirection = (velocity + jitterDirection).normalized;
+            _rb.linearVelocity = newDirection * moveSpeed;
+        }
+
+        private void ResetBall()
+        {
+            _isLaunched = false;
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
         }
     }
 }

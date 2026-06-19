@@ -8,7 +8,11 @@ namespace Brick
     {
         private void OnCollisionEnter2D(Collision2D other)
         {
-            if (other.gameObject.CompareTag("Ball")) BrickManager.Instance.ReturnBrickToPool(this);
+            if (other.gameObject.CompareTag("Ball"))
+            {
+                BrickManager.Instance.ReturnBrickToPool(this);
+                GameManager.Instance.UpdateScore(1);
+            }
         }
     }
 }
