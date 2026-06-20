@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Brick;
 using Core;
@@ -24,12 +25,18 @@ namespace Managers
         [SerializeField] private Vector2 startPosition = new(0f, 3f);
 
         private List<BrickController> _brickPool;
+        private int _activeBricks;
 
         protected override void Start()
         {
             base.Start();
 
             SpawnBrickGrid();
+        }
+
+        private void Update()
+        {
+            if (_activeBricks <= 0) SpawnBrickGrid();
         }
 
         protected override void LoadComponents()
@@ -55,6 +62,9 @@ namespace Managers
         {
             var rows = Random.Range(minRow, maxRow + 1);
             var cols = Random.Range(minCol, maxCol + 1);
+
+            _activeBricks = rows * cols;
+
             var halfWidth = (cols - 1) * spacing.x / 2f;
             for (var r = 0; r < rows; r++)
             for (var c = 0; c < cols; c++)
@@ -79,6 +89,7 @@ namespace Managers
         {
             brick.gameObject.SetActive(false);
             _brickPool.Add(brick);
+            _activeBricks--;
         }
     }
 }
