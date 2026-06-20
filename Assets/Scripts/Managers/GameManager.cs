@@ -1,4 +1,6 @@
 using Core;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -10,9 +12,9 @@ namespace Managers
         private int _currentScore;
         public bool IsGameOver { get; private set; }
 
-        protected override void Awake()
+        protected override void Start()
         {
-            base.Awake();
+            base.Start();
 
             StartGame();
         }
@@ -24,6 +26,7 @@ namespace Managers
 
         private void StartGame()
         {
+            Time.timeScale = 1f;
             UpdateLives(MaxLives);
             UpdateScore(0);
         }
@@ -57,8 +60,22 @@ namespace Managers
 
         private void TriggerGameOver()
         {
-            if (_currentLives > 0) return;
-            IsGameOver = true;
+            IsGameOver = _currentLives <= 0;
+            if (!IsGameOver) return;
+            Time.timeScale = 0f;
+            var bestScore = PlayerPrefs.GetInt("BestScore", 0);
+            if (_currentScore > bestScore)
+            {
+                bestScore = _currentScore;
+                PlayerPrefs.SetInt("BestScore", bestScore);
+            }
+
+            UIManager.Instance.DisplayGameOver(_currentScore, bestScore);
+        }
+
+        public void RestartGame()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }
